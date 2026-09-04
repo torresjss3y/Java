@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es" class="dark"> <!-- Cambiar 'dark' a '' para tema claro -->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Modular Flowbite</title>
+
+  <!-- Tailwind CSS & Flowbite CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Configuración para permitir dark mode por clase HTML
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
+  <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
+</head>
+<body class="bg-white dark:bg-gray-900 antialiased">
+
+  <!-- Contenedores para fragmentos -->
+  <div id="navbar-container"></div>
+  <div id="sidebar-container"></div>
+  <div id="dashboard-container"></div>
+
+  <!-- Flowbite JS (Lógica responsiva del sidebar y dropdowns) -->
+  <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+
+  <!-- Script para la Carga de Fragmentos -->
+  <script>
+    async function loadComponent(id, file) {
+      try {
+        const response = await fetch(file);
+        if (response.ok) {
+          document.getElementById(id).innerHTML = await response.text();
+        } else {
+          console.error(`Error al cargar el fragmento: ${file}`);
+        }
+      } catch (error) {
+        console.error(`Error de red al cargar: ${file}`, error);
+      }
+    }
+
+    // Cargar todos los fragmentos y re-inicializar las funciones de Flowbite
+    Promise.all([
+      loadComponent('navbar-container', 'components/navbar.html'),
+      loadComponent('sidebar-container', 'components/sidebar.html'),
+      loadComponent('dashboard-container', 'components/dashboard.html')
+    ]).then(() => {
+      // Re-inicializar eventos JavaScript de Flowbite tras insertar elementos
+      if (typeof initFlowbite === 'function') {
+        initFlowbite();
+      }
+    });
+  </script>
+</body>
+</html>
