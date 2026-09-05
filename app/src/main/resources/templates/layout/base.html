@@ -36,9 +36,9 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 font-['Plus_Jakarta_Sans'] text-slate-800 dark:text-slate-100 min-h-screen">
 
-    <div th:replace="~{layout/navbar :: navbar}"></div>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-    <div th:replace="~{layout/sidebar :: sidebar}"></div>
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
     <main class="p-4 lg:ml-64 pt-20">
         <div th:replace="${content}"></div>
