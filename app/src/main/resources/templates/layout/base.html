@@ -1,56 +1,74 @@
 <!DOCTYPE html>
-<html lang="es" class="dark"> <!-- Cambiar 'dark' a '' para tema claro -->
+<html xmlns:th="http://www.thymeleaf.org" lang="es" class="antialiased h-full bg-slate-50" th:fragment="layout(content)">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Modular Flowbite</title>
-
-  <!-- Tailwind CSS & Flowbite CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    // Configuración para permitir dark mode por clase HTML
-    tailwind.config = {
-      darkMode: 'class',
-    }
-  </script>
-  <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
-</head>
-<body class="bg-white dark:bg-gray-900 antialiased">
-
-  <!-- Contenedores para fragmentos -->
-  <div id="navbar-container"></div>
-  <div id="sidebar-container"></div>
-  <div id="dashboard-container"></div>
-
-  <!-- Flowbite JS (Lógica responsiva del sidebar y dropdowns) -->
-  <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
-
-  <!-- Script para la Carga de Fragmentos -->
-  <script>
-    async function loadComponent(id, file) {
-      try {
-        const response = await fetch(file);
-        if (response.ok) {
-          document.getElementById(id).innerHTML = await response.text();
-        } else {
-          console.error(`Error al cargar el fragmento: ${file}`);
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${pageTitle} ?: 'Dashboard Nexus'">Dashboard Nexus</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: "#eff6ff", 100: "#dbeafe", 200: "#bfdbfe", 300: "#93c5fd",
+                            400: "#60a5fa", 500: "#3b82f6", 600: "#2563eb", 700: "#1d4ed8",
+                            800: "#1e40af", 900: "#1e3a8a", 950: "#172554"
+                        },
+                        violet: {
+                            50: "#f5f3ff", 100: "#ede9fe", 200: "#ddd6fe", 300: "#c4b5fd",
+                            400: "#a78bfa", 500: "#8b5cf6", 600: "#7c3aed", 700: "#6d28d9",
+                            800: "#5b21b6", 900: "#4c1d95", 950: "#2e1065"
+                        }
+                    }
+                }
+            }
         }
-      } catch (error) {
-        console.error(`Error de red al cargar: ${file}`, error);
-      }
-    }
+    </script>
+    
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 font-['Plus_Jakarta_Sans'] text-slate-800 dark:text-slate-100 min-h-screen">
 
-    // Cargar todos los fragmentos y re-inicializar las funciones de Flowbite
-    Promise.all([
-      loadComponent('navbar-container', 'components/navbar.html'),
-      loadComponent('sidebar-container', 'components/sidebar.html'),
-      loadComponent('dashboard-container', 'components/dashboard.html')
-    ]).then(() => {
-      // Re-inicializar eventos JavaScript de Flowbite tras insertar elementos
-      if (typeof initFlowbite === 'function') {
-        initFlowbite();
-      }
-    });
-  </script>
+    <div th:replace="~{layout/navbar :: navbar}"></div>
+
+    <div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+    <main class="p-4 lg:ml-64 pt-20">
+        <div th:replace="${content}"></div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        let darkMode = localStorage.getItem('theme') === 'dark' || 
+                        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+        function applyTheme(isDark) {
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                if (themeIcon) themeIcon.className = 'fa-regular fa-sun text-lg';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (themeIcon) themeIcon.className = 'fa-regular fa-moon text-lg';
+            }
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+        applyTheme(darkMode);
+
+        if (themeToggle) {
+            themeToggle.addEventListener('click', function() {
+                darkMode = !darkMode;
+                applyTheme(darkMode);
+            });
+        }
+    </script>
 </body>
 </html>
